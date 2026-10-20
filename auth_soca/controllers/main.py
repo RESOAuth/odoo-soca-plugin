@@ -5,6 +5,7 @@ from datetime import timedelta
 from odoo import http, fields
 from odoo.http import request
 from odoo.modules.registry import Registry
+from odoo.addons.web.controllers.utils import _get_login_redirect_url
 from werkzeug.exceptions import Forbidden
 
 from .. import config
@@ -100,9 +101,9 @@ class Soca(http.Controller):
             request.env["soca.ticket"].sudo().create({"token_hash": core.digest(token), "browser_hash": core.digest(request.session["soca_browser"]), "user_id": user.id, "expires_at": fields.Datetime.now() + timedelta(seconds=30)})
             # Host authenticate opens its own cursor. Commit atomic user+link+ticket first.
             request.env.cr.commit()
-            request.session.authenticate(request.env, {"login": user.login, "type": "soca_ticket", "token": token})
+            auth_info = request.session.authenticate(request.env, {"login": user.login, "type": "soca_ticket", "token": token})
             # Native Odoo authentication preserves local MFA policy and rotates session ID.
-            return request.redirect("/my" if user.share else "/odoo", 303)
+            return request.redirect(_get_login_redirect_url(auth_info["uid"], "/my" if user.share else "/odoo"), 303)
         except (SocaError, ValueError, OSError):
             request.env.cr.rollback()
             return request.redirect("/web/login?soca_error=1", 303)

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo><template id="soca_login" inherit_id="web.login" name="SOCA local login entry">
+  <xpath expr="//div[hasclass('oe_login_buttons')]" position="inside">
+    <t t-if="request.env"><t t-foreach="request.env['soca.profile'].sudo().search([('enabled', '=', True)])" t-as="profile">
+      <a class="btn btn-outline-primary d-block mt-2" t-att-href="'/soca/' + profile.name + '/login'">Sign in with SOCA</a>
+    </t></t>
+  </xpath>
+</template></odoo>

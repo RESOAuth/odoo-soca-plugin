@@ -1,0 +1,28 @@
+{
+  "databases": {
+    "soca_demo": {
+      "transaction_key_file": "/run/secrets/soca-transactions.key",
+      "emergency_disabled": false,
+      "profiles": {
+        "staff": {
+          "origin": "https://app.example.com",
+          "issuer": "https://auth.resoauth.cloud",
+          "enabled": false,
+          "private_key_file": "/run/secrets/soca-signing.pem",
+          "metadata_mode": "hosted",
+          "proxy": "https://dynamic-cimd.resoauth.cloud/cimd/%s",
+          "allow_domains": [],
+          "deny_domains": [],
+          "allow_emails": [],
+          "deny_emails": [],
+          "provision": false,
+          "userinfo": false,
+          "id_token_alg": "ES256",
+          "max_age": 3600,
+          "acr_values": [],
+          "required_amr": []
+        }
+      }
+    }
+  }
+}

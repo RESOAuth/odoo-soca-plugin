@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools==80.10.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "odoo-soca-plugin"
+version = "0.1.0a1"
+description = "SOCA OIDC and CIMD integration for Odoo"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "AGPL-3.0-only"
+dependencies = ["PyJWT[crypto]>=2.15.1,<3", "cryptography>=50.0.2,<51", "urllib3>=2.8.0,<3", "pyOpenSSL>=26.4.0,<27"]
+
+[tool.setuptools.packages.find]
+include = ["auth_soca*"]
+
+[tool.setuptools.package-data]
+"*" = ["**/*.json", "**/*.html", "**/*.js", "**/*.xml", "**/*.csv", "*.txt"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

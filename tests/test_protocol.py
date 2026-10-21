@@ -137,6 +137,29 @@ def test_enable_does_not_invalidate_candidate_evidence(cfg):
     assert cfg.fingerprint == fingerprint
 
 
+@pytest.mark.parametrize("mode", ["hosted", "proxy"])
+def test_same_path_key_replacement_invalidates_evidence_and_pending_transactions(raw, key, discovery, monkeypatch, mode):
+    from pathlib import Path
+    raw.update(metadata_mode=mode, inline_jwks=False, enabled=True)
+    original = config(raw)
+    evidence = {"document": original.fingerprint, "login": original.fingerprint}
+    original.require_available(evidence)
+    monkeypatch.setattr(transport, "request_json", lambda *args, **kwargs: discovery)
+    pending = core.start(original, "browser-one")[1]
+    replacement = ec.generate_private_key(ec.SECP256R1())
+    Path(key[1]).write_bytes(replacement.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.PKCS8, serialization.NoEncryption()))
+    changed = config(raw)
+    assert changed.document() == original.document()  # jwks_uri/client ID remain stable.
+    assert changed.fingerprint != original.fingerprint
+    with pytest.raises(SocaError, match="activation_requires_document_and_live_test"):
+        changed.require_available(evidence)
+    with pytest.raises(SocaError, match="configuration_changed"):
+        core.validate_transaction(changed, pending, "browser-one")
+    revision = changed.fingerprint
+    changed.values["enabled"] = False
+    assert changed.fingerprint == revision
+
+
 def test_emergency_disable_blocks_test(cfg, monkeypatch):
     monkeypatch.setenv("SOCA_EMERGENCY_DISABLED", "true")
     with pytest.raises(SocaError, match="emergency_disabled"):

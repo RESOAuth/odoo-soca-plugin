@@ -192,7 +192,7 @@ class Config:
     @property
     def fingerprint(self):
         # Includes policy, keys, canonical callback, UI revision and deployment settings.
-        return digest(canonical({"issuer": self.issuer, "metadata": self.document(), "values": {key: value for key, value in self.values.items() if key not in ("enabled", "emergency_disabled")}}))
+        return digest(canonical({"issuer": self.issuer, "metadata": self.document(), "public_jwk": self.public_key, "values": {key: value for key, value in self.values.items() if key not in ("enabled", "emergency_disabled")}}))
 
     def metadata(self):
         value = {

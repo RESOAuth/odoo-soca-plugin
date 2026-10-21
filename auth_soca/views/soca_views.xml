@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="soca_profile_form" model="ir.ui.view">
+    <field name="name">soca.profile.form</field><field name="model">soca.profile</field>
+    <field name="arch" type="xml"><form string="SOCA profile">
+      <header><button name="action_document_check" type="object" string="Check public documents"/><button name="action_test_login" type="object" string="Test candidate login"/><button name="action_disable" type="object" string="Disable and invalidate pending logins"/></header>
+      <sheet><group><field name="name"/><field name="enabled"/></group>
+        <p>Deployment JSON overrides database configuration. Keep secrets in deployment files. Admission denies everyone until explicit allow rules are configured. Activation requires checked public documents and a real candidate test login. Candidate tests preserve your local session and create no account.</p>
+        <field name="configuration" widget="ace" options="{'mode': 'json'}"/>
+        <group string="Effective values and deployment locks"><field name="effective_status" readonly="1" nolabel="1"/></group>
+      </sheet></form></field>
+  </record>
+  <record id="soca_profile_list" model="ir.ui.view"><field name="name">soca.profile.list</field><field name="model">soca.profile</field><field name="arch" type="xml"><list><field name="name"/><field name="enabled"/></list></field></record>
+  <record id="soca_identity_list" model="ir.ui.view"><field name="name">soca.identity.list</field><field name="model">soca.identity</field><field name="arch" type="xml"><list><field name="issuer"/><field name="subject"/><field name="user_id"/></list></field></record>
+  <record id="soca_identity_form" model="ir.ui.view"><field name="name">soca.identity.form</field><field name="model">soca.identity</field><field name="arch" type="xml"><form string="Approve SOCA identity association"><sheet><p>Verify ownership independently. Verified email alone is insufficient. Linking a privileged administrator is prohibited. Existing associations are immutable; approve migrations explicitly.</p><group><field name="issuer"/><field name="subject"/><field name="user_id"/><field name="approval_reason"/></group></sheet></form></field></record>
+  <record id="soca_profiles_action" model="ir.actions.act_window"><field name="name">SOCA profiles</field><field name="res_model">soca.profile</field><field name="view_mode">list,form</field></record>
+  <record id="soca_identities_action" model="ir.actions.act_window"><field name="name">SOCA identity approvals</field><field name="res_model">soca.identity</field><field name="view_mode">list,form</field></record>
+  <menuitem id="soca_settings_menu" name="SOCA" parent="base.menu_administration" groups="base.group_system" sequence="90"/>
+  <menuitem id="soca_profiles_menu" name="Provider profiles" parent="soca_settings_menu" action="soca_profiles_action"/>
+  <menuitem id="soca_identities_menu" name="Identity approvals" parent="soca_settings_menu" action="soca_identities_action"/>
+</odoo>

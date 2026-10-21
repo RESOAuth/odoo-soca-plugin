@@ -11,3 +11,6 @@ obj/
 !*.example
 dist/
 secrets/
+*.egg-info/
+build/
+demo/soca.json

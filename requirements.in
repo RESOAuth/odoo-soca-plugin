@@ -1,0 +1,4 @@
+PyJWT[crypto]==2.15.1
+cryptography==50.0.2
+urllib3==2.8.0
+pyOpenSSL==26.4.0

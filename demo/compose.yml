@@ -1,0 +1,34 @@
+services:
+  db:
+    image: docker.io/library/postgres:16@sha256:485935f94cc7165afa896978809c37b592dc07f0a37d2c8f645f12412d0212c8
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: ${SOCA_DEMO_DB_PASSWORD:?Set a disposable demo database password}
+      POSTGRES_DB: postgres
+    volumes: [soca-db:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U odoo']
+      interval: 5s
+      retries: 20
+  odoo:
+    build:
+      context: ..
+      dockerfile: Containerfile
+    environment:
+      HOST: db
+      USER: odoo
+      PASSWORD: ${SOCA_DEMO_DB_PASSWORD:?Set a disposable demo database password}
+      SOCA_CONFIG_FILE: /run/config/soca.json
+      SOCA_TRANSACTION_KEY_FILE: /run/secrets/soca-transactions.key
+    command: ['odoo', '--database=soca_demo', '--init=auth_soca', '--without-demo=True', '--proxy-mode', '--log-handler=werkzeug:ERROR']
+    ports: ['127.0.0.1:8069:8069']
+    volumes:
+      - soca-data:/var/lib/odoo
+      - ../secrets:/run/secrets:ro
+      - ./soca.json:/run/config/soca.json:ro
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  soca-db:
+  soca-data:
